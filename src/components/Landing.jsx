@@ -1,23 +1,82 @@
 import React from 'react';
+import { ConnectButton , useConnection } from 'arweave-wallet-kit'
+import { Link } from 'react-router-dom';
+import {
+  result,
+  results,
+  message,
+  spawn,
+  monitor,
+  unmonitor,
+  dryrun,
+  createDataItemSigner
+} from "@permaweb/aoconnect";
+
 
 export default function Landing() {
+
+
+
+  const { connected, connect, disconnect } = useConnection();
+  const DumDumProcess = "GhfdygQ3glfrzG0yciqsIVJuh2HEPi-7qnh42FremA8"
+  const aoSigner = createDataItemSigner(window.arweaveWallet);
+
+
+
+  async function DumDumConnect(){
+    await window.arweaveWallet.connect(["ACCESS_ADDRESS", "SIGN_TRANSACTION"]);
+
+    const res = await message({
+      process: DumDumProcess,
+      tags: [{name: "Action", value: "Connect" },],
+      // data:  json
+      signer: aoSigner,
+      // data: window.arweaveWallet.getActiveAddress(),
+    });
+    console.log("DumDum  result", res);
+
+    const msgResult = await result({
+      process: DumDumProcess,
+      message: res,
+    });
+
+
+    console.log(msgResult);
+
+    const messageId = await message({
+      process: DumDumProcess ,
+      signer: createDataItemSigner(window.arweaveWallet),
+      tags: [{ name: "Action", value: "Connect" }],
+      data: `Send({Target="GhfdygQ3glfrzG0yciqsIVJuh2HEPi-7qnh42FremA8",Action="Connect"})`,
+    });
+    let res1 = await result({
+      message: messageId,
+      process: DumDumProcess,
+    });
+  
+  }
+
+
+
+
+
   return (
     <div className="flex flex-col min-h-[100vh] bg-gradient-to-b from-[#4CAF50] to-[#81C784] text-white">
       <header className="px-4 lg:px-6 h-14 flex items-center justify-between">
-        <a href="#" className="flex items-center justify-center">
+        <Link to="#" className="flex items-center justify-center">
           <WavesIcon className="h-6 w-6" />
           <span className="sr-only">DumDumUp</span>
-        </a>
+        </Link>
         <nav className="flex gap-4 sm:gap-6">
-          <a href="#" className="text-sm font-medium hover:underline underline-offset-4">
+          <Link to="#" className="text-sm font-medium hover:underline underline-offset-4">
             About
-          </a>
-          <a href="#" className="text-sm font-medium hover:underline underline-offset-4">
+          </Link>
+          <Link  to="/leaderboard" className="text-sm font-medium hover:underline underline-offset-4">
             Leaderboard
-          </a>
-          <a href="#" className="text-sm font-medium hover:underline underline-offset-4">
+          </Link>
+          <Link to="#" className="text-sm font-medium hover:underline underline-offset-4">
             FAQ
-          </a>
+          </Link>
         </nav>
       </header>
       <main className="flex-1 flex flex-col items-center justify-center gap-8 px-4 md:px-6">
@@ -27,16 +86,53 @@ export default function Landing() {
             Climb to the top and become the ultimate champion.
           </p>
         </div>
-        <button
+        {/* <button
           className="px-6 py-3 text-lg font-medium bg-gradient-to-r from-[#4CAF50] to-[#81C784] hover:from-[#81C784] hover:to-[#4CAF50] shadow-lg shadow-[#4CAF50]/50 rounded-md"
         >
           Connect Wallet
-        </button>
+
+          <h1 className=' text-2xl '>Welcome to Loom</h1>
+         {connected ? (
+          <button >
+            <Link to="/map" >
+              <button className='px-6 py-3 text-lg font-medium bg-gradient-to-r from-[#4CAF50] to-[#81C784] hover:from-[#81C784] hover:to-[#4CAF50] shadow-lg shadow-[#4CAF50]/50 rounded-md' onClick={()=>DumDumConnect()} >
+              Dum Dum Goo </button>
+            </Link>
+          </button>
+        ) : (
+          
+        <ConnectButton
+//   accent="rgb(255, 0, 0)"
+profileModal={true}
+showBalance={false}
+showAddress={false}
+showProfilePicture={true}
+/>
+        )}
+        </button> */}
+
+{connected ? (
+          <button >
+            <Link to="/game" >
+              <button className='px-6 py-3 text-lg font-medium bg-gradient-to-r from-[#4CAF50] to-[#81C784] hover:from-[#81C784] hover:to-[#4CAF50] shadow-lg shadow-[#4CAF50]/50 rounded-md' onClick={()=>loomConnect()} >
+              Explore Loom </button>
+            </Link>
+          </button>
+        ) : (
+          
+        <ConnectButton
+//   accent="rgb(255, 0, 0)"
+profileModal={true}
+showBalance={false}
+showAddress={false}
+showProfilePicture={true}
+/>
+        )}
         <div className="flex items-center gap-2">
           <span className="text-sm">Powered by</span>
-          <a href="#" target="_blank">
+          <Link to="#" target="_blank">
             <b>AO</b>
-          </a>
+          </Link>
         </div>
       </main>
     </div>
