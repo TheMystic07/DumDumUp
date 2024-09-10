@@ -209,7 +209,7 @@ export const CharacterController = () => {
     const updatePositionInterval = setInterval(() => {
       if (rb.current) {
         const position = rb.current.translation();
-        const rotation = rb.current.rotation(); // Fetch the current rotation
+        const rotation = character.current.rotation.y; // Fetch the current character rotation
 
         console.log(position, rotation);
         UpdatePlayerPosition(position, rotation); // Send both position and rotation
