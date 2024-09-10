@@ -6,22 +6,15 @@ import { useEffect, useRef, useState } from "react";
 import { MathUtils, Vector3 } from "three";
 import { degToRad } from "three/src/math/MathUtils.js";
 import { Character } from "./Character";
-// import { ao, createDataItemSigner, message } from "@permaweb/aoconnect";
 import {
   result,
-  results,
   message,
-  spawn,
-  monitor,
-  unmonitor,
-  dryrun,
-  createDataItemSigner , connect
+  createDataItemSigner,
+  connect
 } from "@permaweb/aoconnect";
-
 
 // Constants for the AO process
 const DumDumProcess = "GhfdygQ3glfrzG0yciqsIVJuh2HEPi-7qnh42FremA8";
-// const LoomProcess = "YOUR_LOOM_PROCESS_ID"; // Add your Loom process ID here
 
 const normalizeAngle = (angle) => {
   while (angle > Math.PI) angle -= 2 * Math.PI;
@@ -44,19 +37,23 @@ const lerpAngle = (start, end, t) => {
   return normalizeAngle(start + (end - start) * t);
 };
 
-
-
-
 const ao = connect();
-const UpdatePlayerPosition = async (position) => {
-  let pos = {
-    position:{
 
+// Function to update both position and rotation
+const UpdatePlayerPosition = async (position, rotation) => {
+  let pos = {
+    position: {
       x: position.x,
       y: position.y,
-      z: position.z
-    }
-    };
+      z: position.z,
+    },
+    rotation: {
+      x: rotation.x,  // Pitch (X-axis rotation)
+      y: rotation.y,  // Yaw (Y-axis rotation)
+      z: rotation.z,  // Roll (Z-axis rotation)
+    },
+  };
+
   await window.arweaveWallet.connect(["ACCESS_ADDRESS"]);
   const m_id = await message({
     process: DumDumProcess,
@@ -69,7 +66,6 @@ const UpdatePlayerPosition = async (position) => {
     message: m_id,
   });
   // console.log(res);
-
 };
 
 export const CharacterController = () => {
@@ -208,12 +204,15 @@ export const CharacterController = () => {
     }
   });
 
+  // Send position and rotation every second
   useEffect(() => {
     const updatePositionInterval = setInterval(() => {
       if (rb.current) {
         const position = rb.current.translation();
-        console.log(position);
-        UpdatePlayerPosition(position);
+        const rotation = rb.current.rotation(); // Fetch the current rotation
+
+        console.log(position, rotation);
+        UpdatePlayerPosition(position, rotation); // Send both position and rotation
       }
     }, 1000); // Update every second
 
