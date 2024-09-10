@@ -52,10 +52,11 @@ export const Experience = () => {
     const { Messages } = res;
     const players = Messages[0].Data;
     const playerObj = JSON.parse(players);
+    console.log(playerObj);
 
     // Create boxes array with positions where key matches the address
     const newBoxes = Object.keys(playerObj).reduce((acc, key) => {
-      if (key === addr) { // Check if the key matches the current address
+      if (key != addr) { // Check if the key matches the current address
         const { position } = playerObj[key];
         acc.push(position);
       }
@@ -69,7 +70,7 @@ export const Experience = () => {
     getActivePlayers();
     const interval = setInterval(() => {
       getActivePlayers();
-    }, 500);
+    }, 1000);
 
     return () => {
       clearInterval(interval);
