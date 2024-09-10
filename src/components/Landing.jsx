@@ -9,7 +9,7 @@ import {
   monitor,
   unmonitor,
   dryrun,
-  createDataItemSigner
+  createDataItemSigner , connect
 } from "@permaweb/aoconnect";
 
 
@@ -22,39 +22,56 @@ export default function Landing() {
   const aoSigner = createDataItemSigner(window.arweaveWallet);
 
 
-
-  async function DumDumConnect(){
-    await window.arweaveWallet.connect(["ACCESS_ADDRESS", "SIGN_TRANSACTION"]);
-
-    const res = await message({
+  const ao = connect();
+  const DumDumConnect= async () => {
+    await window.arweaveWallet.connect(["ACCESS_ADDRESS"]);
+    const m_id = await message({
       process: DumDumProcess,
-      tags: [{name: "Action", value: "Connect" },],
-      // data:  json
-      signer: aoSigner,
-      // data: window.arweaveWallet.getActiveAddress(),
-    });
-    console.log("DumDum  result", res);
-
-    const msgResult = await result({
-      process: DumDumProcess,
-      message: res,
-    });
-
-
-    console.log(msgResult);
-
-    const messageId = await message({
-      process: DumDumProcess ,
       signer: createDataItemSigner(window.arweaveWallet),
+      // data: JSON.stringify(pos),`
       tags: [{ name: "Action", value: "Connect" }],
-      data: `Send({Target="GhfdygQ3glfrzG0yciqsIVJuh2HEPi-7qnh42FremA8",Action="Connect"})`,
     });
-    let res1 = await result({
-      message: messageId,
+    const res = await  result({
       process: DumDumProcess,
+      message: m_id,
     });
+    console.log(res);
   
-  }
+  };
+  
+
+  // async function DumDumConnect(){
+  //   await window.arweaveWallet.connect(["ACCESS_ADDRESS", "SIGN_TRANSACTION"]);
+
+  //   const res = await message({
+  //     process: DumDumProcess,
+  //     tags: [{name: "Action", value: "Connect" },],
+  //     // data:  json
+  //     signer: aoSigner,
+  //     // data: window.arweaveWallet.getActiveAddress(),
+  //   });
+  //   console.log("DumDum  result", res);
+
+  //   const msgResult = await result({
+  //     process: DumDumProcess,
+  //     message: res,
+  //   });
+
+
+  //   console.log(msgResult);
+
+  //   const messageId = await message({
+  //     process: DumDumProcess ,
+  //     signer: createDataItemSigner(window.arweaveWallet),
+  //     tags: [{ name: "Action", value: "Connect" }],
+  //     data: `Send({Target="GhfdygQ3glfrzG0yciqsIVJuh2HEPi-7qnh42FremA8",Action="Connect"})`,
+  //   });
+  //   let res1 = await result({
+  //     message: messageId,
+  //     process: DumDumProcess,
+  //   });
+  
+  // }
 
 
 
@@ -86,36 +103,12 @@ export default function Landing() {
             Climb to the top and become the ultimate champion.
           </p>
         </div>
-        {/* <button
-          className="px-6 py-3 text-lg font-medium bg-gradient-to-r from-[#4CAF50] to-[#81C784] hover:from-[#81C784] hover:to-[#4CAF50] shadow-lg shadow-[#4CAF50]/50 rounded-md"
-        >
-          Connect Wallet
-
-          <h1 className=' text-2xl '>Welcome to Loom</h1>
-         {connected ? (
-          <button >
-            <Link to="/map" >
-              <button className='px-6 py-3 text-lg font-medium bg-gradient-to-r from-[#4CAF50] to-[#81C784] hover:from-[#81C784] hover:to-[#4CAF50] shadow-lg shadow-[#4CAF50]/50 rounded-md' onClick={()=>DumDumConnect()} >
-              Dum Dum Goo </button>
-            </Link>
-          </button>
-        ) : (
-          
-        <ConnectButton
-//   accent="rgb(255, 0, 0)"
-profileModal={true}
-showBalance={false}
-showAddress={false}
-showProfilePicture={true}
-/>
-        )}
-        </button> */}
 
 {connected ? (
           <button >
             <Link to="/game" >
-              <button className='px-6 py-3 text-lg font-medium bg-gradient-to-r from-[#4CAF50] to-[#81C784] hover:from-[#81C784] hover:to-[#4CAF50] shadow-lg shadow-[#4CAF50]/50 rounded-md' onClick={()=>loomConnect()} >
-              Explore Loom </button>
+              <button className='px-6 py-3 text-lg font-medium bg-gradient-to-r from-[#4CAF50] to-[#81C784] hover:from-[#81C784] hover:to-[#4CAF50] shadow-lg shadow-[#4CAF50]/50 rounded-md' onClick={()=>DumDumConnect()} >
+              Explore </button>
             </Link>
           </button>
         ) : (
@@ -159,3 +152,4 @@ function WavesIcon(props) {
     </svg>
   );
 }
+

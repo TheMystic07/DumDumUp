@@ -6,6 +6,22 @@ import { useEffect, useRef, useState } from "react";
 import { MathUtils, Vector3 } from "three";
 import { degToRad } from "three/src/math/MathUtils.js";
 import { Character } from "./Character";
+// import { ao, createDataItemSigner, message } from "@permaweb/aoconnect";
+import {
+  result,
+  results,
+  message,
+  spawn,
+  monitor,
+  unmonitor,
+  dryrun,
+  createDataItemSigner , connect
+} from "@permaweb/aoconnect";
+
+
+// Constants for the AO process
+const DumDumProcess = "GhfdygQ3glfrzG0yciqsIVJuh2HEPi-7qnh42FremA8";
+// const LoomProcess = "YOUR_LOOM_PROCESS_ID"; // Add your Loom process ID here
 
 const normalizeAngle = (angle) => {
   while (angle > Math.PI) angle -= 2 * Math.PI;
@@ -26,6 +42,34 @@ const lerpAngle = (start, end, t) => {
   }
 
   return normalizeAngle(start + (end - start) * t);
+};
+
+
+
+
+const ao = connect();
+const UpdatePlayerPosition = async (position) => {
+  let pos = {
+    position:{
+
+      x: position.x,
+      y: position.y,
+      z: position.z
+    }
+    };
+  await window.arweaveWallet.connect(["ACCESS_ADDRESS"]);
+  const m_id = await message({
+    process: DumDumProcess,
+    signer: createDataItemSigner(window.arweaveWallet),
+    data: JSON.stringify(pos),
+    tags: [{ name: "Action", value: "UpdatePlayerPosition" }],
+  });
+  const res = await ao.result({
+    process: DumDumProcess,
+    message: m_id,
+  });
+  // console.log(res);
+
 };
 
 export const CharacterController = () => {
@@ -164,6 +208,18 @@ export const CharacterController = () => {
     }
   });
 
+  useEffect(() => {
+    const updatePositionInterval = setInterval(() => {
+      if (rb.current) {
+        const position = rb.current.translation();
+        console.log(position);
+        UpdatePlayerPosition(position);
+      }
+    }, 1000); // Update every second
+
+    return () => clearInterval(updatePositionInterval); // Cleanup interval on component unmount
+  }, []);
+
   return (
     <RigidBody
       colliders={false}
@@ -190,18 +246,6 @@ export const CharacterController = () => {
             >
               {score}
             </Text>
-            {/* Back-facing text (rotated 180 degrees) */}
-            {/* <Text
-              fontSize={0.2}
-              color="white"
-              outlineWidth={0.01}
-              outlineColor="black"
-              anchorX="center"
-              anchorY="middle"
-              rotation={[0, Math.PI, 0]} // Rotate the text to face the back
-            >
-              {score}
-            </Text> */}
           </group>
         </group>
       </group>

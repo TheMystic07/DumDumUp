@@ -1,35 +1,33 @@
-import { Environment, OrthographicCamera , OrbitControls } from "@react-three/drei";
+import { Environment, OrthographicCamera } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
 import { useControls } from "leva";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CharacterController } from "./CharacterController";
 import { Map } from "./Map";
 
+import {
+  result,
+  results,
+  message,
+  spawn,
+  monitor,
+  unmonitor,
+  dryrun,
+  createDataItemSigner,
+  connect,
+} from "@permaweb/aoconnect";
+
+const DumDumProcess = "GhfdygQ3glfrzG0yciqsIVJuh2HEPi-7qnh42FremA8";
+
 const maps = {
-  // castle_on_hills: {
-  //   scale: 3,
-  //   position: [-6, -7, 0],
-  // },
-  // animal_crossing_map: {
-  //   scale: 20,
-  //   position: [-15, -1, 10],
-  // },
-  // city_scene_tokyo: {
-  //   scale: 0.72,
-  //   position: [0, -1, -3.5],
-  // },
-  // de_dust_2_with_real_light: {
-  //   scale: 0.3,
-  //   position: [-5, -3, 13],
-  // },
   dummap1: {
     scale: 0.21,
-    position:[84, -5, -50]
-    // position: [-4, 0, -6],
+    position: [84, -5, -50],
   },
 };
 
 export const Experience = () => {
+  const [boxes, setBoxes] = useState([]);
   const shadowCameraRef = useRef();
   const { map } = useControls("Map", {
     map: {
@@ -38,9 +36,48 @@ export const Experience = () => {
     },
   });
 
+  const ao = connect();
+
+  const getActivePlayers = async () => {
+    const addr = await window.arweaveWallet.getActiveAddress();
+    const res = await dryrun({
+      process: DumDumProcess,
+      tags: [
+        {
+          name: "Action",
+          value: "GetActivePlayers",
+        },
+      ],
+    });
+    const { Messages } = res;
+    const players = Messages[0].Data;
+    const playerObj = JSON.parse(players);
+
+    // Create boxes array with positions where key matches the address
+    const newBoxes = Object.keys(playerObj).reduce((acc, key) => {
+      if (key === addr) { // Check if the key matches the current address
+        const { position } = playerObj[key];
+        acc.push(position);
+      }
+      return acc;
+    }, []);
+
+    setBoxes(newBoxes);
+  };
+
+  useEffect(() => {
+    getActivePlayers();
+    const interval = setInterval(() => {
+      getActivePlayers();
+    }, 500);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
   return (
     <>
-      {/* <OrbitControls /> */}
       <Environment preset="sunset" />
       <directionalLight
         intensity={0.65}
@@ -66,10 +103,14 @@ export const Experience = () => {
           model={`models/${map}.glb`}
         />
         <CharacterController />
-        {/* <mesh position={[0, 0, 0]} scale={1}>
-          <boxGeometry args={[1, 1, 1]} />
-          <meshStandardMaterial color="yellow" />
-        </mesh> */}
+
+        {/* Render boxes based on positions */}
+        {boxes.map((position, index) => (
+          <mesh position={[position.x, position.y, position.z]} scale={1} key={index}>
+            <boxGeometry args={[1, 1, 1]} />
+            <meshStandardMaterial color="yellow" />
+          </mesh>
+        ))}
       </Physics>
     </>
   );
