@@ -15,7 +15,7 @@ export function Character({ animation, ...props }) {
     return () => actions?.[animation]?.fadeOut(0.24);
   }, [animation]);
   return (
-    <group ref={group} {...props} dispose={null}>
+    <group ref={group} {...props} >
       <group name="Scene">
         <group name="fall_guys">
           <primitive object={nodes._rootJoint} />

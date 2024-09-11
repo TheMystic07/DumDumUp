@@ -4,18 +4,10 @@ import { useControls } from "leva";
 import { useEffect, useRef, useState } from "react";
 import { CharacterController } from "./CharacterController";
 import { Map } from "./Map";
-
-import {
-  result,
-  results,
-  message,
-  spawn,
-  monitor,
-  unmonitor,
-  dryrun,
-  createDataItemSigner,
-  connect,
-} from "@permaweb/aoconnect";
+import { Character } from "./Character";
+import { dryrun, connect } from "@permaweb/aoconnect";
+import { RemotePlayer } from "./RemotePlayer";
+// import { RemoteChar } from "./RemoteChar";s
 
 const DumDumProcess = "GhfdygQ3glfrzG0yciqsIVJuh2HEPi-7qnh42FremA8";
 
@@ -56,7 +48,7 @@ export const Experience = () => {
 
     // Create boxes array with positions where key matches the address
     const newBoxes = Object.keys(playerObj).reduce((acc, key) => {
-      if (key != addr) { // Check if the key matches the current address
+      if (key !== addr) { // Check if the key matches the current address
         const { position } = playerObj[key];
         acc.push(position);
       }
@@ -104,15 +96,18 @@ export const Experience = () => {
           model={`models/${map}.glb`}
         />
         <CharacterController />
-
-        {/* Render boxes based on positions */}
-        {boxes.map((position, index) => (
-          <mesh position={[position.x, position.y, position.z]} scale={1} key={index}>
-            <boxGeometry args={[1, 1, 1]} />
-            <meshStandardMaterial color="yellow" />
-          </mesh>
-        ))}
       </Physics>
+
+        {/* Render Characters based on the active players' positions */}
+        {boxes.map((position, index) => (
+          <RemotePlayer
+            key={index}
+            scale={0.18} // Modify the scale for all characters
+            position={[position.x, position.y, position.z]}
+            rotation-y={Math.PI} // Optional: Add rotation if needed
+            animation="idle" // Add the correct animation name
+          />
+        ))}
     </>
   );
 };
