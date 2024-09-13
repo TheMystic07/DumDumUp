@@ -208,7 +208,7 @@ export const CharacterController = () => {
         const position = rb.current.translation();
         const rotation = character.current.rotation.y; // Fetch the current character rotation
 
-        console.log(position, rotation);
+        // console.log(position, rotation);
         UpdatePlayerPosition(position, rotation); // Send both position and rotation
       }
     }, 1000); // Update every second
