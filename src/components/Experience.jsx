@@ -4,13 +4,10 @@ import { useControls } from "leva";
 import { useEffect, useRef, useState } from "react";
 import { CharacterController } from "./CharacterController";
 import { Map } from "./Map";
-import { Character } from "./Character";
 import { dryrun, connect } from "@permaweb/aoconnect";
 import { RemotePlayer } from "./RemotePlayer";
-// import { RemoteChar } from "./RemoteChar";s
 
 const DumDumProcess = "GhfdygQ3glfrzG0yciqsIVJuh2HEPi-7qnh42FremA8";
-
 const maps = {
   dummap1: {
     scale: 0.21,
@@ -19,7 +16,7 @@ const maps = {
 };
 
 export const Experience = () => {
-  const [boxes, setBoxes] = useState([]);
+  const [players, setPlayers] = useState([]);
   const shadowCameraRef = useRef();
   const { map } = useControls("Map", {
     map: {
@@ -27,7 +24,6 @@ export const Experience = () => {
       options: Object.keys(maps),
     },
   });
-
   const ao = connect();
 
   const getActivePlayers = async () => {
@@ -42,31 +38,24 @@ export const Experience = () => {
       ],
     });
     const { Messages } = res;
-    const players = Messages[0].Data;
-    const playerObj = JSON.parse(players);
-    console.log(playerObj);
+    const playersData = JSON.parse(Messages[0].Data);
+    console.log(playersData);
 
-    // Create boxes array with positions where key matches the address
-    const newBoxes = Object.keys(playerObj).reduce((acc, key) => {
-      if (key !== addr) { // Check if the key matches the current address
-        const { position } = playerObj[key];
-        acc.push(position);
+    const newPlayers = Object.entries(playersData).reduce((acc, [key, value]) => {
+      if (key !== addr) {
+        const position = value.GA || { x: 0, y: 0, z: 0 };
+        const rotation = value[1] || 0; // Assuming the second value is the rotation
+        acc.push({ position, rotation });
       }
       return acc;
     }, []);
-
-    setBoxes(newBoxes);
+    setPlayers(newPlayers);
   };
 
   useEffect(() => {
     getActivePlayers();
-    const interval = setInterval(() => {
-      getActivePlayers();
-    }, 1000);
-
-    return () => {
-      clearInterval(interval);
-    };
+    const interval = setInterval(getActivePlayers, 1000);
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -96,18 +85,16 @@ export const Experience = () => {
           model={`models/${map}.glb`}
         />
         <CharacterController />
-        {/* Render Characters based on the active players' positions */}
-        {boxes.map((position, index) => (
+        {players.map((player, index) => (
           <RemotePlayer
             key={index}
-            scale={0.18} // Modify the scale for all characters
-            position={[position.x, position.y, position.z]}
-            rotation-y={position.rotation} // Optional: Add rotation if needed
-            animation="idle" // Add the correct animation name
+            scale={0.18}
+            position={[player.position.x, player.position.y, player.position.z]}
+            rotation-y={player.rotation}
+            animation="idle"
           />
         ))}
       </Physics>
-
     </>
   );
 };
