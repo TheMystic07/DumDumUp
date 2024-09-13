@@ -47,11 +47,8 @@ const UpdatePlayerPosition = async (position, rotation) => {
       y: position.y,
       z: position.z,
     },
-    rotation: {
-      x: rotation.x,  // Pitch (X-axis rotation)
-      y: rotation.y,  // Yaw (Y-axis rotation)
-      z: rotation.z,  // Roll (Z-axis rotation)
-    },
+    rotation:  rotation.y
+  
   };
 
   await window.arweaveWallet.connect(["ACCESS_ADDRESS"]);

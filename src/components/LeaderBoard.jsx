@@ -30,7 +30,7 @@ export default function LeaderBoard() {
     });
     const { Messages } = res;
     const scoreData = Messages[0].Data;
-    const scoreObj = JSON.parse(scoreData);
+    const scoreObj = JSON.parse(scoreData)[0];
     console.log(scoreObj);
 
     // Transform the object into an array of {address, score} objects
@@ -50,7 +50,7 @@ export default function LeaderBoard() {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-[100dvh] bg-gradient-to-b from-[#4CAF50] to-[#81C784] text-white">
+    <div className="flex flex-col min-h-[100vh] bg-gradient-to-b from-[#4CAF50] to-[#81C784] text-white">
       <header className="px-4 lg:px-6 h-14 flex items-center justify-between">
         <Link to="#" className="flex items-center justify-center">
           <span className="sr-only">DumDumUp</span>

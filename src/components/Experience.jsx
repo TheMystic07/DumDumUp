@@ -96,18 +96,18 @@ export const Experience = () => {
           model={`models/${map}.glb`}
         />
         <CharacterController />
-      </Physics>
-
         {/* Render Characters based on the active players' positions */}
         {boxes.map((position, index) => (
           <RemotePlayer
             key={index}
             scale={0.18} // Modify the scale for all characters
             position={[position.x, position.y, position.z]}
-            rotation-y={Math.PI} // Optional: Add rotation if needed
+            rotation-y={position.rotation} // Optional: Add rotation if needed
             animation="idle" // Add the correct animation name
           />
         ))}
+      </Physics>
+
     </>
   );
 };

@@ -7,6 +7,7 @@ import Login from './Login'; // Import your Login component
 // import Game from './Game';   // Import your Game component
 import './index.css';
 import LeaderBoard from './components/LeaderBoard';
+import Rewards from './components/Rewards';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -25,6 +26,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Route path="/" element={<Login />} /> {/* Login Route */}
         <Route path="/game" element={<App />} />   {/* Game Route */}
         <Route path="/leaderboard" element={<LeaderBoard />} />   {/* Game Route */}
+        <Route path="/rewards" element={<Rewards />} />   {/* Game Route */}
       </Routes>
     </Router>
     </ArweaveWalletKit>
