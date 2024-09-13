@@ -19,7 +19,7 @@ export function RemotePlayer({ animation, rotation, ...props }) {
   });
 
   return (
-    <group ref={group} {...props}>
+    <group ref={group} {...props}  >
       <group name="Scene">
         <group name="fall_guys">
           <mesh name="body" geometry={nodes.body.geometry} material={materials["Material.001"]} />
